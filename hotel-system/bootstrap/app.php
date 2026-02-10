@@ -11,6 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withMiddleware(function (Middleware $middleware) {
+        // This is where you would "talk" to the TrimStrings logic
+        // even though the file doesn't exist in your app folder.
+        $middleware->trimStrings(except: [
+            'some_special_field', 
+        ]);
+    })
     ->withMiddleware(function (Middleware $middleware): void {
         //
     })

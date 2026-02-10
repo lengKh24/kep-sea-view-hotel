@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomMGTController;
+use App\Http\Controllers\SaleMGTController;
 Route::get('/', function () {
     return redirect()->route('dashboard');
 });
@@ -16,6 +17,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/general-sale', [DashboardController::class, 'general_sale'])->name('dashboard.general_sale');
     Route::get('/dashboard/tax-sale', [DashboardController::class, 'tax_sale'])->name('dashboard.tax_sale');
     Route::resource('roomsmgt', RoomMGTController::class);
+    Route::resource('salemgt', SaleMGTController::class);
 });
 
 Route::middleware('auth')->group(function () {
