@@ -9,6 +9,7 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
+
 Route::middleware(['auth'])->group(function () {
     // This is the missing piece that connects to your Controller
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

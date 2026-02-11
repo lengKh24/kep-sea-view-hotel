@@ -806,7 +806,7 @@ async function viewInvoice(id) {
             
             document.getElementById(`p-subtotal-${num}`).innerText = `$${parseFloat(sale.balance_subtotal).toFixed(2)}`;
             document.getElementById(`p-booking-${num}`).innerText = `-$${parseFloat(sale.booking_price).toFixed(2)}`;
-            document.getElementById(`p-grand-total-${num}`).innerText = `$${parseFloat(sale.balance_grand_total).toFixed(2)}`;
+            document.getElementById(`p-grand-total-${num}`).innerText = `$${parseFloat(sale.balance_subtotal).toFixed(2)}`;
             
             const stampEl = document.getElementById(`p-stamp-${num}`);
             stampEl.innerText = sale.status;
