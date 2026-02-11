@@ -277,22 +277,38 @@ async function executeQuickStatusUpdate(id, balance) {
 // THE SLEDGEHAMMER: Full update only when editing details.
 async function executeFullSave(form, saleId) {
     const formData = new FormData(form);
-    const url = saleId ? `/api/sales/${saleId}` : '/api/sales';
-    if (saleId) formData.append('_method', 'PUT');
+    
+    // If saleId is null, empty string, or "undefined", it's a NEW sale
+    const isNew = (!saleId || saleId === "" || saleId === "undefined");
+    const url = isNew ? '/api/sales' : `/api/sales/${saleId}`;
+    
+    // Laravel requires _method PUT for spoofing if using FormData
+    if (!isNew) {
+        formData.append('_method', 'PUT');
+    }
 
     try {
         const response = await fetch(url, { 
-            method: 'POST', 
+            method: 'POST', // Always POST, Laravel handles PUT via _method
             body: formData,
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            headers: { 
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
         });
+        
         const result = await response.json();
         if (result.success) {
-            Toast.fire({ icon: 'success', title: 'Booking Details Updated' });
+            Toast.fire({ icon: 'success', title: isNew ? 'Created Successfully' : 'Updated Successfully' });
             toggleModal();
             fetchSales();
+        } else {
+            console.error("Server Error:", result.errors);
+            Toast.fire({ icon: 'error', title: 'Save Failed' });
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error("Network Error:", e); 
+    }
 }
 
 // 6.1 Fetch Room Data and populate the Master Row Select
@@ -551,6 +567,9 @@ function calculateNights() {
     const checkOutInput = document.getElementById('check_out');
     const nightsDisplay = document.getElementById('nights_display');
 
+    // Run the validation
+    if (!validateDates()) return;
+    
     if (!checkInInput || !checkOutInput || !nightsDisplay) return;
 
     const checkInDate = new Date(checkInInput.value);
@@ -762,51 +781,66 @@ async function viewInvoice(id) {
     try {
         const response = await fetch(`/api/sales/${id}`);
         const result = await response.json();
-        if (!result.success) return;
-
         const sale = result.data;
-        const modal = document.getElementById('viewInvoiceModal');
+
+        // Save original title to restore it later
+        const originalTitle = document.title;
+        const customerName = `${sale.cus_first_name} ${sale.cus_last_name}`;
         
-        // 1. Map Text Data
-        document.getElementById('v_inv_no').innerText = sale.invoice_no;
-        document.getElementById('v_cus_name').innerText = `${sale.cus_first_name} ${sale.cus_last_name}`;
-        document.getElementById('v_cus_contact').innerText = sale.cus_contact;
-        document.getElementById('v_check_in').innerText = sale.check_in_date;
-        document.getElementById('v_check_out').innerText = sale.check_out_date;
-        document.getElementById('v_subtotal').innerText = `$${parseFloat(sale.balance_subtotal).toFixed(2)}`;
-        document.getElementById('v_grand_total').innerText = `$${parseFloat(sale.balance_subtotal).toFixed(2)}`;
+        // --- NEW: SET CUSTOM FILENAME ---
+        // Result: "REF#0001 - John Doe.pdf"
+        document.title = `${sale.invoice_no} - ${customerName}`;
 
-        // 2. Dynamic Status Coloring
-        const header = document.getElementById('invoice_header_bg');
-        if (sale.status.toLowerCase() === 'paid') {
-            header.classList.replace('bg-indigo-600', 'bg-emerald-600');
-        } else if (sale.status.toLowerCase() === 'cancelled') {
-            header.classList.replace('bg-indigo-600', 'bg-rose-600');
-        } else {
-            header.className = "px-8 py-6 flex justify-between items-center text-white bg-indigo-600";
-        }
+        const status = sale.status.toLowerCase();
+        let stampClass = 'stamp-pending';
+        if (status === 'paid') stampClass = 'stamp-paid';
+        if (status === 'cancelled') stampClass = 'stamp-cancelled';
 
-        // 3. Build Table Rows
-        const tbody = document.getElementById('v_item_rows');
-        tbody.innerHTML = '';
-        sale.items.forEach(item => {
-            tbody.innerHTML += `
-                <tr>
-                    <td class="px-6 py-4">
-                        <p class="font-bold text-slate-800 dark:text-white">${item.room_number_snapshot}</p>
-                        <p class="text-xs text-slate-500">${item.room_type_snapshot}</p>
-                    </td>
-                    <td class="px-6 py-4 text-center font-bold text-slate-600 dark:text-slate-400">${sale.qty || 1}</td>
-                    <td class="px-6 py-4 text-right font-black text-slate-800 dark:text-white">$${parseFloat(item.total_price).toFixed(2)}</td>
-                </tr>
-            `;
+        [1, 2].forEach(num => {
+            document.getElementById(`p-invoice-no-${num}`).innerText = sale.invoice_no;
+            document.getElementById(`p-customer-name-${num}`).innerText = customerName;
+            document.getElementById(`p-customer-contact-${num}`).innerText = sale.cus_contact || 'N/A';
+            document.getElementById(`p-check-in-${num}`).innerText = sale.check_in_date;
+            document.getElementById(`p-check-out-${num}`).innerText = sale.check_out_date;
+            document.getElementById(`p-nights-${num}`).innerText = `${sale.qty} Nights`;
+            
+            document.getElementById(`p-subtotal-${num}`).innerText = `$${parseFloat(sale.balance_subtotal).toFixed(2)}`;
+            document.getElementById(`p-booking-${num}`).innerText = `-$${parseFloat(sale.booking_price).toFixed(2)}`;
+            document.getElementById(`p-grand-total-${num}`).innerText = `$${parseFloat(sale.balance_grand_total).toFixed(2)}`;
+            
+            const stampEl = document.getElementById(`p-stamp-${num}`);
+            stampEl.innerText = sale.status;
+            stampEl.className = `status-stamp ${stampClass}`;
+            document.getElementById(`p-status-text-${num}`).innerText = `Folio is currently ${sale.status.toUpperCase()}`;
+            
+            const rows = sale.items.map(item => {
+                const roomNo = item.room_number_snapshot || 'N/A';
+                return `
+                    <tr class="border-b border-slate-50 hover:bg-slate-50/50">
+                        <td class="p-3">
+                            <p class="font-bold text-slate-800">${item.room_type_snapshot}</p>
+                        </td>
+                        <td class="p-3 text-center font-mono font-bold text-indigo-600">${roomNo}</td>
+                        <td class="p-3 text-center">${sale.qty}</td>
+                        <td class="p-3 text-right text-slate-500">$${parseFloat(item.room_unit_price_snapshot).toFixed(2)}</td>
+                        <td class="p-3 text-right text-red-500 font-medium">-$${parseFloat(item.discount_percent).toFixed(2)}</td>
+                        <td class="p-3 text-right font-black text-slate-900">$${parseFloat(item.total_price).toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+            document.getElementById(`p-items-list-${num}`).innerHTML = rows;
         });
 
-        // 4. Show Modal
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        // Trigger Print
+        setTimeout(() => { 
+            window.print(); 
+            // Restore original title after a slight delay so the UI doesn't flicker
+            setTimeout(() => { document.title = originalTitle; }, 1000);
+        }, 500);
 
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error("Print Error:", e);
+    }
 }
 
 function closeViewModal() {
@@ -895,7 +929,6 @@ const lockedFields = ['invoice_no', 'sale_id'];
 
 // 2. Apply the lock
 const allInputs = formEl.querySelectorAll('input, select, textarea');
-
 allInputs.forEach(input => {
     if (lockedFields.includes(input.name) || input.id === 'sale_id') {
         input.readOnly = true;
@@ -967,3 +1000,34 @@ allInputs.forEach(input => {
     }
 }
 window.editSale = editSale;
+
+/**
+ * Validates that Check-In is before Check-Out
+ * Returns true if valid, false if invalid
+ */
+function validateDates() {
+    const checkIn = document.getElementById('check_in').value;
+    const checkOut = document.getElementById('check_out').value;
+
+    if (!checkIn || !checkOut) return true; // Don't alert if fields are empty yet
+
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+
+    if (start >= end) {
+        Swal.fire({
+            title: 'កាលបរិច្ឆេទមិនត្រឹមត្រូវ', // Invalid Date
+            text: 'ថ្ងៃចេញត្រូវតែក្រោយថ្ងៃចូល!',
+            icon: 'error',
+            confirmButtonColor: '#4f46e5',
+        });
+        
+        // Reset the check-out field so they have to pick again
+        document.getElementById('check_out').value = '';
+        document.getElementById('nights_display').value = 0;
+        return false;
+    }
+    return true;
+}
+
+

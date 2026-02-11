@@ -1,100 +1,180 @@
-<div id="printTemplate" class="hidden">
-    <div class="print-container bg-white text-slate-900 mx-auto" 
-         style="width: 210mm; min-height: 297mm; padding: 15mm; position: relative; box-sizing: border-box; color: #1a1a1a;">
-      
-      <div class="flex justify-between items-end mb-12 pb-6 border-b-4 border-slate-900">
-        <div>
-          <h1 class="text-5xl font-black tracking-tighter uppercase leading-none mb-2">Invoice</h1>
-          <p class="text-sm font-bold tracking-[0.2em] text-slate-400 uppercase">Official Receipt</p>
-        </div>
-        <div class="text-right">
-          <p class="text-sm font-black uppercase">Invoice ID: <span id="p_invoice_id" class="text-blue-600"></span></p>
-          <p class="text-xs font-bold text-slate-400 uppercase mt-1">Issued: <span id="p_date"></span></p>
-        </div>
-      </div>
+<style>
+  @media print {
+    /* 1. Page Setup */
+    @page { 
+        size: landscape; 
+        margin: 0mm; 
+    }
 
-      <div class="grid grid-cols-2 gap-12 mb-12">
-        <div class="border-l-4 border-blue-600 pl-6">
-          <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Customer Information</h3>
-          <p id="p_cus_name" class="text-2xl font-black leading-none mb-1"></p> 
-          <p id="p_cus_contact" class="text-sm font-bold text-slate-500"></p>
-        </div>
-        <div class="text-right flex flex-col justify-end">
-           <h2 class="text-xl font-black uppercase leading-tight">Kep Sea View Hotel</h2>
-           <p class="text-xs font-bold text-slate-500 leading-relaxed mt-2">
-             National Road #33A, Sangkat Kaeb, Kep Province<br>
-             077 636 065 | Kepseaview@gmail.com<br>
-             <span class="text-slate-900 underline">VAT-TIN: E122-2500001991</span>
-           </p>
-        </div>
-      </div>
+    /* 2. Hide everything by default using the 'Nuclear' approach */
+    body * {
+        visibility: hidden;
+    }
 
-      <div class="grid grid-cols-4 border-2 border-slate-900 rounded-none mb-12 overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-        <div class="py-5 px-4 border-r-2 border-slate-900 bg-slate-50">
-            <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Check In</p>
-            <p class="text-sm font-black italic" id="p_check_in"></p>
-        </div>
-        <div class="py-5 px-4 border-r-2 border-slate-900">
-            <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Check Out</p>
-            <p class="text-sm font-black italic" id="p_check_out"></p>
-        </div>
-        <div class="py-5 px-4 border-r-2 border-slate-900 bg-slate-50">
-            <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Nights (Qty)</p>
-            <p class="text-sm font-black italic" id="p_qty"></p>
-        </div>
-        <div class="py-5 px-4 flex flex-col justify-center items-center">
-            <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Status</p>
-            <span class="text-xs font-black uppercase px-3 py-1 bg-slate-900 text-white" id="p_status"></span>
-        </div>
-      </div>
+    /* 3. Explicitly kill the sidebar and nav from the layout flow */
+    .sidebar, .main-sidebar, .nav-container, .topbar, .no-print, 
+    [class*="sidebar"], [class*="nav"], header, footer, aside {
+        display: none !important;
+    }
 
-      <table class="w-full mb-12">
-        <thead>
-          <tr class="border-b-4 border-slate-900">
-            <th class="py-4 text-left text-[10px] font-black uppercase tracking-[0.2em]">Accommodation Description</th>
-            <th class="py-4 text-right text-[10px] font-black uppercase tracking-[0.2em]">Unit Price</th>
-            <th class="py-4 text-right text-[10px] font-black uppercase tracking-[0.2em]">Line Total</th>
-          </tr>
-        </thead>
-        <tbody id="p_item_rows" class="divide-y divide-slate-200">
-            </tbody>
-      </table>
+    /* 4. Ensure the parent containers of the print area don't have margins/padding */
+    html, body, .content-wrapper, .main-content, .page-wrapper, main {
+        visibility: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        width: 100% !important;
+        height: auto !important; /* Allow growing for multiple pages */
+        overflow: visible !important;
+    }
 
-      <div class="flex justify-end mb-32">
-        <div class="w-80 border-t-4 border-slate-900 pt-6">
-            <div class="flex justify-between text-xs font-bold uppercase text-slate-400 mb-2">
-                <span>Sub-Total</span>
-                <span id="p_subtotal" class="text-slate-900"></span>
+    /* 5. The Print Area: No absolute positioning (to allow multi-page flow) */
+    #print-area {
+        visibility: visible !important;
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important; /* Give it some breathing room */
+        background: white !important;
+    }
+
+    #print-area * {
+        visibility: visible !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* 6. Prevent the invoice card from being split awkwardly mid-way */
+    .invoice-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+  }
+
+  /* Keep your existing Stamp Styling below */
+  .status-stamp {
+    position: absolute;
+    top: 45%;
+    left: 15%;
+    font-size: 5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5rem;
+    transform: rotate(-20deg);
+    pointer-events: none;
+    z-index: 0;
+    padding: 1rem 2rem;
+    border: 10px double currentColor;
+    border-radius: 1rem;
+    opacity: 0.15;
+    display: none;
+  }
+  .stamp-paid { color: #059669; display: block; }
+  .stamp-cancelled { color: #dc2626; display: block; }
+  .stamp-pending { color: #d97706; display: block; }
+</style>
+
+<div id="print-area" class="hidden print:block p-6 font-inter bg-slate-50 min-h-screen">
+    <div class="flex flex-row justify-between gap-6">
+        @foreach([1, 2] as $copy)
+        <div class="invoice-card relative w-1/2 p-8 bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between min-h-[750px]">
+            <div class="status-stamp" id="p-stamp-{{ $copy }}">PAID</div>
+              <div class="relative z-10">
+                <div class="flex justify-between items-center border-b-2 border-slate-900 pb-4">
+                  <div class="flex items-center gap-4">
+                      <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-16 w-auto">
+                      <div >
+                          <h2 class="text-xl font-bold text-slate-900 leading-tight">សណ្ឋាគារកែប ស៊ីវ្យូ</h2>
+                          <h2 class="text-xs mt-2 text-slate-600 ">Kep Sea View Hotel & Skybar</h2>
+                      </div>
+                  </div>
+
+                  <div class="text-right">
+                      <h1 class="text-4xl font-black text-slate-900 tracking-tighter uppercase ">Invoice</h1>
+                      <div class="mt-1 text-[10px] uppercase font-bold tracking-widest text-slate-500 flex flex-col items-end">
+                          <p>REF: <span id="p-invoice-no-{{ $copy }}" class="text-slate-900">#0000</span></p>
+                          <p>Date: <span class="text-slate-900">{{ date('d M Y') }}</span></p>
+                      </div>
+                  </div>
+              </div>
+
+                <div class="flex justify-between mt-2 mb-4 text-[11px] leading-relaxed">
+                    <div class="w-1/2 text-left">
+                        <span class="block text-[9px] font-black uppercase text-indigo-600 mb-1">Bill To:</span>
+                        <p class="font-bold text-slate-900 text-sm" id="p-customer-name-{{ $copy }}"></p>
+                        <p id="p-customer-contact-{{ $copy }}"></p>
+                    </div>
+                    <div class="w-1/2 text-right">
+                        <span class="block text-[9px] font-black uppercase text-indigo-600 mb-1">From:</span>
+                        <p class="font-bold text-slate-800">Kep Sea View Hotel</p>
+                        <p>National Road #33A, Kaeb Town, Kep</p>
+                        <p class="font-medium">Tel: 077 636 065 | Kepseaview@gmail.com</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 border border-slate-200 rounded-md mb-4 bg-slate-50">
+                    <div class="p-3 border-r border-slate-200">
+                        <span class="block text-[8px] font-black uppercase text-slate-400">Check In</span>
+                        <p class="font-bold text-slate-800 text-xs" id="p-check-in-{{ $copy }}"></p>
+                    </div>
+                    <div class="p-3 border-r border-slate-200 text-center">
+                        <span class="block text-[8px] font-black uppercase text-slate-400">Check Out</span>
+                        <p class="font-bold text-slate-800 text-xs" id="p-check-out-{{ $copy }}"></p>
+                    </div>
+                    <div class="p-3 text-right">
+                        <span class="block text-[8px] font-black uppercase text-slate-400">Nights</span>
+                        <p class="font-bold text-slate-800 text-xs" id="p-nights-{{ $copy }}"></p>
+                    </div>
+                </div>
+
+                <table class="w-full text-[11px] mb-8">
+                    <thead>
+                        <tr class="bg-slate-900 text-white uppercase tracking-tighter">
+                            <th class="p-2 text-left">Description</th>
+                            <th class="p-2 text-center">Room No</th>
+                            <th class="p-2 text-center">Qty</th>
+                            <th class="p-2 text-right">Unit Price</th>
+                            <th class="p-2 text-right">Discount</th>
+                            <th class="p-2 text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="p-items-list-{{ $copy }}" class="divide-y divide-slate-100"></tbody>
+                </table>
             </div>
-            <div class="flex justify-between text-xs font-bold uppercase text-rose-500 mb-4">
-                <span>Deposit Applied</span>
-                <span id="p_deposit"></span>
-            </div>
-            <div class="flex justify-between items-center py-4 px-4 bg-slate-900 text-white">
-                <span class="text-xs font-black uppercase italic tracking-widest">Grand Total</span>
-                <span id="p_grand_total" class="text-3xl font-black"></span>
-            </div>
-        </div>
-      </div>
 
-      <div class="grid grid-cols-2 gap-32 mt-auto">
-        <div class="text-center relative">
-          <div class="absolute -top-12 left-1/2 -translate-x-1/2 border-4 border-blue-600 text-blue-600 font-black px-4 py-1 text-xl uppercase -rotate-12 opacity-30 pointer-events-none">
-            Original Receipt
-          </div>
-          <div class="border-t-2 border-slate-900 pt-4">
-            <p class="text-[10px] font-black uppercase tracking-widest">Guest Signature</p>
-          </div>
-        </div>
-        <div class="text-center">
-          <div class="border-t-2 border-slate-900 pt-4">
-            <p class="text-[10px] font-black uppercase tracking-widest">Authorized Cashier</p>
-          </div>
-        </div>
-      </div>
+            <div class="relative z-10">
+                <div class="flex justify-between items-end mb-6">
+                    <div class="w-1/3">
+                         <span class="block text-[8px] font-black uppercase text-slate-400 mb-1">Status</span>
+                         <p class="text-[10px] font-bold text-slate-700 italic" id="p-status-text-{{ $copy }}"></p>
+                    </div>
+                    <div class="w-1/2 space-y-1">
+                        <div class="flex justify-between text-xs px-2">
+                            <span>Sub-Total</span>
+                            <span id="p-subtotal-{{ $copy }}" class="font-bold"></span>
+                        </div>
+                        <div class="flex justify-between text-xs px-2 text-emerald-600">
+                            <span>Booking-Price (-)</span>
+                            <span id="p-booking-{{ $copy }}" class="font-bold"></span>
+                        </div>
+                        <div class="flex justify-between text-lg py-2 px-2 bg-slate-900 text-white rounded mt-2">
+                            <span class="font-black">GRAND TOTAL</span>
+                            <span id="p-grand-total-{{ $copy }}" class="font-black"></span>
+                        </div>
+                    </div>
+                </div>
 
-      <p class="absolute bottom-10 left-15 right-15 text-[8px] text-center font-bold text-slate-300 uppercase tracking-[0.5em]">
-        Thank you for choosing Kep Sea View Hotel
-      </p>
+                <div class="flex justify-between items-center pt-10">
+                    <div class="w-40 border-t border-slate-300 text-center pt-2 text-[9px] uppercase text-slate-400">
+                        Customer Signature
+                    </div>
+                    <div class="text-[8px] text-slate-400 text-right">
+                        <p>© 2026 KEP SEA VIEW HOTEL & SKYBAR</p>
+                        <p>Printed: {{ date('H:i') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
     </div>
 </div>

@@ -25,7 +25,7 @@
                 </div>
 
                 <form id="saleSearchForm" method="GET" action="{{ route('salemgt.index') }}"
-                    class="relative w-full md:w-96 group">
+                    class="relative w-full md:w-96 group">  
                     <div class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
                         <svg class="w-4 h-4 text-neutral-500 group-focus-within:text-indigo-500 transition-colors"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">

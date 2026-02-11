@@ -33,11 +33,11 @@
                         <select name="room_type" required
                             class="w-full px-4 py-2.5 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:text-white appearance-none">
                             <option value="">Please select room</option>
-                            <option value="Sea View Double Room">Sea View Double Room</option>
-                            <option value="Mountain View Twin Room">Mountain View Twin Room</option>
-                            <option value="Sea View Deluxe Room">Sea View Deluxe Room</option>
-                            <option value="Sea View Twin Room">Sea View Twin Room</option>
-                            <option value="Family Room">Family Room</option>
+                            <option value="Sea View Double">Sea View Double Room</option>
+                            <option value="Mountain View Twin">Mountain View Twin Room</option>
+                            <option value="Sea View Deluxe">Sea View Deluxe Room</option>
+                            <option value="Sea View Twin">Sea View Twin Room</option>
+                            <option value="Family">Family Room</option>
                         </select>
                     </div>
 
