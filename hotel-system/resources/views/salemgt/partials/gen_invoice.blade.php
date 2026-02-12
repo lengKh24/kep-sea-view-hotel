@@ -77,7 +77,7 @@
 <div id="print-area" class="hidden print:block p-6 font-inter bg-slate-50 min-h-screen">
     <div class="flex flex-row justify-between gap-6">
         @foreach([1, 2] as $copy)
-        <div class="invoice-card relative w-1/2 p-8 bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between min-h-[750px]">
+        <div class="invoice-card relative w-1/2 p-8 bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col  min-h-[750px]">
             <div class="status-stamp" id="p-stamp-{{ $copy }}">PAID</div>
               <div class="relative z-10">
                 <div class="flex justify-between items-center border-b-2 border-slate-900 pb-4">
@@ -98,6 +98,7 @@
                   </div>
               </div>
 
+              
                 <div class="flex justify-between mt-2 mb-4 text-[11px] leading-relaxed">
                     <div class="w-1/2 text-left">
                         <span class="block text-[9px] font-black uppercase text-indigo-900 mb-1">Bill To:</span>

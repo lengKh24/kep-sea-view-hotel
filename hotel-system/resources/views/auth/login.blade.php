@@ -75,6 +75,15 @@
                         class="w-full bg-slate-900 dark:bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 text-white font-bold py-4 rounded-lg shadow-xl shadow-slate-200 dark:shadow-none transition-all duration-300 active:scale-95 uppercase tracking-widest text-xs">
                         Authorize Entry
                     </button>
+
+                    <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
+                        <p class="text-sm text-slate-500 dark:text-slate-400">
+                            New to the team? 
+                            <a href="{{ route('register') }}" class="ml-1 font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                                Request Access
+                            </a>
+                        </p>
+                    </div>
                 </form>
             </div>
         </div>

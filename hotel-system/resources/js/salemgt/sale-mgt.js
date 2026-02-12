@@ -788,7 +788,8 @@ async function viewInvoice(id) {
         const customerName = `${sale.cus_first_name} ${sale.cus_last_name}`;
         
         // --- NEW: SET CUSTOM FILENAME ---
-        document.title = `${sale.invoice_no} - ${customerName}`;
+        const InvoiceDatenow = new Date().toLocaleString("en-US", {timeZone: "Asia/Phnom_Penh"});
+        document.title = `${sale.invoice_no} - ${customerName} - ${InvoiceDatenow}`;
 
         const status = sale.status.toLowerCase();
         let stampClass = 'stamp-pending';
