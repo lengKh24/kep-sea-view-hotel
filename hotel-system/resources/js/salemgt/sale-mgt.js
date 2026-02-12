@@ -788,7 +788,6 @@ async function viewInvoice(id) {
         const customerName = `${sale.cus_first_name} ${sale.cus_last_name}`;
         
         // --- NEW: SET CUSTOM FILENAME ---
-        // Result: "REF#0001 - John Doe.pdf"
         document.title = `${sale.invoice_no} - ${customerName}`;
 
         const status = sale.status.toLowerCase();
@@ -806,24 +805,23 @@ async function viewInvoice(id) {
             
             document.getElementById(`p-subtotal-${num}`).innerText = `$${parseFloat(sale.balance_subtotal).toFixed(2)}`;
             document.getElementById(`p-booking-${num}`).innerText = `-$${parseFloat(sale.booking_price).toFixed(2)}`;
-            document.getElementById(`p-grand-total-${num}`).innerText = `$${parseFloat(sale.balance_subtotal).toFixed(2)}`;
+            document.getElementById(`p-grand-total-${num}`).innerText = `$${parseFloat(sale.balance_remaining).toFixed(2)}`;
             
             const stampEl = document.getElementById(`p-stamp-${num}`);
             stampEl.innerText = sale.status;
             stampEl.className = `status-stamp ${stampClass}`;
             document.getElementById(`p-status-text-${num}`).innerText = `Folio is currently ${sale.status.toUpperCase()}`;
             
+
             const rows = sale.items.map(item => {
                 const roomNo = item.room_number_snapshot || 'N/A';
                 return `
                     <tr class="border-b border-slate-50 hover:bg-slate-50/50">
-                        <td class="p-3">
-                            <p class="font-bold text-slate-800">${item.room_type_snapshot}</p>
+                        <td class="font-medium text-slate-800">${item.room_type_snapshot}-${roomNo}
                         </td>
-                        <td class="p-3 text-center font-mono font-bold text-indigo-600">${roomNo}</td>
-                        <td class="p-3 text-center">${sale.qty}</td>
-                        <td class="p-3 text-right text-slate-500">$${parseFloat(item.room_unit_price_snapshot).toFixed(2)}</td>
-                        <td class="p-3 text-right text-red-500 font-medium">-$${parseFloat(item.discount_percent).toFixed(2)}</td>
+                        <td class="p-3 text-center text-slate-900">${parseFloat(item.food_price || 0).toFixed(2)}</td>
+                        <td class="p-3 text-right text-slate-900">$${parseFloat(item.room_unit_price_snapshot).toFixed(2)}</td>
+                        <td class="p-3 text-right text-red-500">% ${parseFloat(item.discount_percent).toFixed(2)}</td>
                         <td class="p-3 text-right font-black text-slate-900">$${parseFloat(item.total_price).toFixed(2)}</td>
                     </tr>
                 `;

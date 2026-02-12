@@ -81,31 +81,31 @@
             <div class="status-stamp" id="p-stamp-{{ $copy }}">PAID</div>
               <div class="relative z-10">
                 <div class="flex justify-between items-center border-b-2 border-slate-900 pb-4">
-                  <div class="flex items-center gap-4">
+                  <div class="flex items-center">
                       <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-16 w-auto">
                       <div >
-                          <h2 class="text-xl font-bold text-slate-900 leading-tight">សណ្ឋាគារកែប ស៊ីវ្យូ</h2>
+                          <h2 class="text-xl font-bold text-[#b1a166] leading-tight">សណ្ឋាគារកែប ស៊ីវ្យូ</h2>
                           <h2 class="text-xs mt-2 text-slate-600 ">Kep Sea View Hotel & Skybar</h2>
                       </div>
                   </div>
 
                   <div class="text-right">
-                      <h1 class="text-4xl font-black text-slate-900 tracking-tighter uppercase ">Invoice</h1>
-                      <div class="mt-1 text-[10px] uppercase font-bold tracking-widest text-slate-500 flex flex-col items-end">
-                          <p>REF: <span id="p-invoice-no-{{ $copy }}" class="text-slate-900">#0000</span></p>
-                          <p>Date: <span class="text-slate-900">{{ date('d M Y') }}</span></p>
+                      <h1 class="text-4xl font-black text-indigo-900 tracking-tighter uppercase ">Invoice</h1>
+                      <div class="mt-1 text-[8px] uppercase tracking-widest text-slate-500 flex flex-col items-end">
+                          <p>REF: <span id="p-invoice-no-{{ $copy }}" class="text-indigo-900">#0000</span></p>
+                          <p>Date Issue: <span class="text-indigo-900">{{ date('d M Y') }}</span></p>
                       </div>
                   </div>
               </div>
 
                 <div class="flex justify-between mt-2 mb-4 text-[11px] leading-relaxed">
                     <div class="w-1/2 text-left">
-                        <span class="block text-[9px] font-black uppercase text-indigo-600 mb-1">Bill To:</span>
+                        <span class="block text-[9px] font-black uppercase text-indigo-900 mb-1">Bill To:</span>
                         <p class="font-bold text-slate-900 text-sm" id="p-customer-name-{{ $copy }}"></p>
                         <p id="p-customer-contact-{{ $copy }}"></p>
                     </div>
                     <div class="w-1/2 text-right">
-                        <span class="block text-[9px] font-black uppercase text-indigo-600 mb-1">From:</span>
+                        <span class="block text-[9px] font-black uppercase text-indigo-900 mb-1">From:</span>
                         <p class="font-bold text-slate-800">Kep Sea View Hotel</p>
                         <p>National Road #33A, Kaeb Town, Kep</p>
                         <p class="font-medium">Tel: 077 636 065 | Kepseaview@gmail.com</p>
@@ -127,12 +127,12 @@
                     </div>
                 </div>
 
-                <table class="w-full text-[11px] mb-8">
+                <table class="w-full text-[11px] mb-2">
                     <thead>
-                        <tr class="bg-slate-900 text-white uppercase tracking-tighter">
+                        <tr class="bg-indigo-900 text-white uppercase tracking-tighter">
                             <th class="p-2 text-left">Description</th>
-                            <th class="p-2 text-center">Room No</th>
-                            <th class="p-2 text-center">Qty</th>
+                            <th class="p-2 text-center">Food Price</th>
+                            <!-- <th class="p-2 text-center">Qty</th> -->
                             <th class="p-2 text-right">Unit Price</th>
                             <th class="p-2 text-right">Discount</th>
                             <th class="p-2 text-right">Total</th>
@@ -149,16 +149,16 @@
                          <p class="text-[10px] font-bold text-slate-700 italic" id="p-status-text-{{ $copy }}"></p>
                     </div>
                     <div class="w-1/2 space-y-1">
-                        <div class="flex justify-between text-xs px-2">
+                        <div class="font-bold flex justify-between text-xs px-2 text-indigo-900">
                             <span>Sub-Total</span>
                             <span id="p-subtotal-{{ $copy }}" class="font-bold"></span>
                         </div>
-                        <div class="flex justify-between text-xs px-2 text-emerald-600">
+                        <div class="font-bold flex justify-between text-xs px-2 text-indigo-900">
                             <span>Booking-Price (-)</span>
                             <span id="p-booking-{{ $copy }}" class="font-bold"></span>
                         </div>
-                        <div class="flex justify-between text-lg py-2 px-2 bg-slate-900 text-white rounded mt-2">
-                            <span class="font-black">GRAND TOTAL</span>
+                        <div class="flex justify-between text-xs font-bold px-2 text-indigo-900 rounded mt-2">
+                            <span>GRAND TOTAL</span>
                             <span id="p-grand-total-{{ $copy }}" class="font-black"></span>
                         </div>
                     </div>
