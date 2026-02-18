@@ -1,5 +1,7 @@
 import './bootstrap';
 import 'flowbite';  
+import './salemgt/sale-mgt';
+import './room-mgt/room-mgt';
 
 import Alpine from 'alpinejs';
 
