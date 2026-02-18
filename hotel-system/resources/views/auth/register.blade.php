@@ -133,4 +133,4 @@
             color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
         });
     @endif
-</script>   
+</script>  

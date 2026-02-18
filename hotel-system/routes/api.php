@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\RoomMGTApiController;
 use App\Http\Controllers\Api\SaleMgtApiController;
+use App\Http\Controllers\Api\TaxMgtApiController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::name('api.')->group(function () {
@@ -15,4 +17,8 @@ Route::name('api.')->group(function () {
 
 Route::name('api.')->group(function () {
     Route::apiResource('sales', \App\Http\Controllers\Api\SaleMgtApiController::class);
+});
+
+Route::name('api.')->group(function () {
+    Route::apiResource('tax', \App\Http\Controllers\Api\TaxMgtApiController::class);
 });
