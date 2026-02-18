@@ -4,7 +4,10 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: ['resources/css/app.css', 'resources/js/app.js',
+                ...getJsFiles('resources/js/salemgt'),
+                ...getJsFiles('resources/js/room-mgt'),
+            ],
             refresh: true,
         }),
     ],

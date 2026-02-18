@@ -102,3 +102,7 @@
     </div>
     </div>
     @endsection
+    
+@push('scripts')
+  @vite(['resources/js/room-mgt/room-mgt.js'])
+@endpush

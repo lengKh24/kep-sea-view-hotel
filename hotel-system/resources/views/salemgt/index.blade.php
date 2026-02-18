@@ -106,3 +106,6 @@
     </div>
     @endsection
     
+@push('scripts')
+  @vite(['resources/js/salemgt/sale-mgt.js'])
+@endpush
