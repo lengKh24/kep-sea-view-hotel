@@ -5,8 +5,8 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js',
-                ...getJsFiles('resources/js/salemgt'),
-                ...getJsFiles('resources/js/room-mgt'),
+                'resources/js/salemgt/sale-mgt.js',
+                'resources/js/room-mgt/room-mgt.js',
             ],
             refresh: true,
         }),
