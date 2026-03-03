@@ -9,6 +9,7 @@ use App\Models\SaleItem;
 use Illuminate\Support\Facades\DB;
 use App\Models\RoomMGT;
 
+
 // Carbon::parse($date): 
 // This handles various date formats automatically. It converts 
 // "2026-02-10" into a smart PHP object that understands time.
@@ -19,24 +20,27 @@ class SaleMgtApiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-      // 1. Fetch sales from the Parent table
-    // 2. 'with' tells Laravel to join the 'sale_items' data automatically
-    // 3. 'latest()' puts the newest invoices at the top of your list
-    $sales = SaleMGT::with(['items' => function($query) {
-        // Optional: you can even sort the items within each sale
-        $query->orderBy('created_at', 'asc');
-    }])
-    ->latest() 
-    ->get();
+        $sales = \App\Models\SaleMGT::with(['items' => function($query) {
+                $query->orderBy('created_at', 'asc');
+            }])
+            ->when($request->search, function($query) use ($request) {
+                $search = $request->search;
+                // Search in Parent Sales Table
+                $query->where('invoice_no', 'LIKE', "%{$search}%")
+                    ->orWhere('cus_first_name', 'LIKE', "%{$search}%")
+                    ->orWhere('cus_last_name', 'LIKE', "%{$search}%")
+                    ->orWhere('cus_contact', 'LIKE', "%{$search}%");
+            })
+            ->latest() 
+            ->get();
 
-    // 4. Return as a standardized JSON response
-    return response()->json([
-        'success' => true,
-        'count'   => $sales->count(), // Good for showing "Total: 10 Sales" on UI
-        'data'    => $sales
-    ], 200);
+        return response()->json([
+            'success' => true,
+            'count'   => $sales->count(),
+            'data'    => $sales
+        ], 200);
     }
 
     /**

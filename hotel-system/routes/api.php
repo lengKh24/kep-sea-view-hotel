@@ -20,5 +20,8 @@ Route::name('api.')->group(function () {
 });
 
 Route::name('api.')->group(function () {
-    Route::apiResource('tax', \App\Http\Controllers\Api\TaxMgtApiController::class);
+    Route::apiResource('taxmgt', \App\Http\Controllers\Api\TaxMgtApiController::class);
+});
+Route::name('api.')->group(function () {
+    Route::apiResource('dashboard', \App\Http\Controllers\Api\DashboardApiController::class);
 });

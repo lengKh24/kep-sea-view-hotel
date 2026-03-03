@@ -249,7 +249,6 @@ async function handleFormSubmit(e) {
 }
 
 // THE NUTCRACKER: Small, safe, fast.
-// THE NUTCRACKER: Small, safe, fast.
 async function executeQuickStatusUpdate(id, balance) {
     try {
         const response = await fetch(`/api/sales/${id}`, {
@@ -1028,5 +1027,3 @@ function validateDates() {
     }
     return true;
 }
-
-
