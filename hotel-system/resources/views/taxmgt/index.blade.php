@@ -1,6 +1,5 @@
 @extends('layouts.dashboard')
-@include('taxmgt.partials.add_modal')
-@include('taxmgt.partials.invoice')
+
 @section('content')
     <!-- {{-- Page Header --}} -->
     <div class="mb-8">
@@ -102,6 +101,9 @@
         </div>
     </div>
     </div>
+    @include('taxmgt.partials.add_modal')
+    @include('taxmgt.partials.invoice')
+    
     @endsection
     
 @push('scripts')
