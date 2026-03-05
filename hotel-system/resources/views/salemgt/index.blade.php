@@ -25,7 +25,7 @@
                 </div>
 
                 <form id="saleSearchForm" method="GET" action="{{ route('salemgt.index') }}"
-                    class="relative w-full md:w-96 group">  
+                    class="relative w-full md:w-96 group"> 
                     <div class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
                         <svg class="w-4 h-4 text-neutral-500 group-focus-within:text-indigo-500 transition-colors"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,16 +41,22 @@
 
             </div>
             <!-- Button -->
+             
             <div class="flex items-center gap-2">
-                <!-- <button type="button" class="inline-flex items-center px-4 py-2.5 text-sm font-medium text-neutral-700 bg-white border border-neutral-200 rounded-xl hover:bg-neutral-50 dark:bg-neutral-900 dark:text-neutral-300 dark:border-white/10 dark:hover:bg-white/5 transition-all">
-                    <svg class="w-4 h-4 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.586a1 1 0 0 1-.293.707l-6.414 6.414a1 1 0 0 0-.293.707V17l-4 4v-6.586a1 1 0 0 0-.293-.707L3.293 7.293A1 1 0 0 1 3 6.586V4Z"/></svg>
-                    Filters
-                </button> -->
+                <a href="{{ route('export.sales') }}" 
+                class="inline-flex items-center px-4 py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all active:scale-95">
+                    
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    
+                    Export to Excel
+                </a>
                 <button type="button" onclick="toggleModal()"
                 class="inline-flex items-center px-4 py-2.5 text-sm font-bold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-all active:scale-95">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                 Create New Sale
-            </button>   
+                </button>   
 
             </div>
         </div>
@@ -104,6 +110,7 @@
         </div>
     </div>
     </div>
+    
     @endsection
     
 @push('scripts')

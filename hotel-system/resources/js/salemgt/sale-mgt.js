@@ -1027,3 +1027,16 @@ function validateDates() {
     }
     return true;
 }
+
+// Optional: Add to your dashboard.js
+function handleExport(element) {
+    const originalText = element.innerHTML;
+    element.innerHTML = 'Generating...';
+    element.classList.add('opacity-50', 'pointer-events-none');
+    
+    // The download will happen, and after 3 seconds we reset the button
+    setTimeout(() => {
+        element.innerHTML = originalText;
+        element.classList.remove('opacity-50', 'pointer-events-none');
+    }, 3000);
+}

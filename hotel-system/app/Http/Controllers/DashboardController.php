@@ -7,6 +7,8 @@ use App\Models\RoomMGT;
 use App\Models\SaleMGT;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Exports\SalesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DashboardController extends Controller
 {
@@ -62,4 +64,12 @@ class DashboardController extends Controller
             'chartData'
         ));
     }
+// Add this method to your Controller
+public function exportSales() 
+{
+    // This naming convention is professional: SiteName_ReportType_Date
+    $fileName = 'Hotel_Sales_Report_' . now()->format('Y-m-d') . '.xlsx';
+    
+    return Excel::download(new SalesExport, $fileName);
 }
+    }
