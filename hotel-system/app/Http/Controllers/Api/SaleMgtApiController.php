@@ -22,25 +22,24 @@ class SaleMgtApiController extends Controller
      */
     public function index(Request $request)
     {
-        $sales = \App\Models\SaleMGT::with(['items' => function($query) {
-                $query->orderBy('created_at', 'asc');
-            }])
-            ->when($request->search, function($query) use ($request) {
-                $search = $request->search;
-                // Search in Parent Sales Table
-                $query->where('invoice_no', 'LIKE', "%{$search}%")
-                    ->orWhere('cus_first_name', 'LIKE', "%{$search}%")
-                    ->orWhere('cus_last_name', 'LIKE', "%{$search}%")
-                    ->orWhere('cus_contact', 'LIKE', "%{$search}%");
-            })
-            ->latest() 
-            ->get();
+        // Use paginate(10) instead of get()
+    $sales = \App\Models\SaleMGT::with(['items' => function($query) {
+            $query->orderBy('created_at', 'asc');
+        }])
+        ->when($request->search, function($query) use ($request) {
+            $search = $request->search;
+            $query->where('invoice_no', 'LIKE', "%{$search}%")
+                ->orWhere('cus_first_name', 'LIKE', "%{$search}%")
+                ->orWhere('cus_last_name', 'LIKE', "%{$search}%")
+                ->orWhere('cus_contact', 'LIKE', "%{$search}%");
+        })
+        ->latest() 
+        ->paginate(10); // This automatically handles page numbers
 
-        return response()->json([
-            'success' => true,
-            'count'   => $sales->count(),
-            'data'    => $sales
-        ], 200);
+    return response()->json([
+        'success' => true,
+        'data'    => $sales // This now contains the pagination metadata!
+    ], 200);
     }
 
     /**
