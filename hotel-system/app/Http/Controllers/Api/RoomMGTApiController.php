@@ -11,12 +11,17 @@ class RoomMGTApiController extends Controller
 // GET (List/Search)
     public function index(Request $request)
     {
-        // We use query() to build a flexible search
-        return RoomMGT::query()
-            ->when($request->search, function($q) use ($request) {
-            })
-            ->latest()
-            ->paginate(10); // Professional APIs always paginate
+       $query = RoomMGT::query();
+
+    if ($request->has('search') && $request->search != '') {
+        $searchTerm = $request->search;
+        $query->where(function($q) use ($searchTerm) {
+            $q->where('room_number', 'LIKE', "%{$searchTerm}%")
+              ->orWhere('room_type', 'LIKE', "%{$searchTerm}%");
+        });
+    }
+
+    return $query->latest()->paginate(10);
     }
 
     public function store(Request $request)

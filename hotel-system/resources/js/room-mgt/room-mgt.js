@@ -52,22 +52,73 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+let currentPage = 1;
 // 3. API & DATA FETCHING
-async function fetchRooms(search = '') {
-    const loader = document.getElementById('loading-overlay');
+async function fetchRooms(search = '', page = 1) {
+   const loader = document.getElementById('loading-overlay');
     if (loader) loader.classList.remove('hidden');
 
     try {
-        const response = await fetch(`/api/roomsmgt?search=${search}`);
+        const response = await fetch(`/api/roomsmgt?search=${search}&page=${page}`);
         const result = await response.json();
-        renderTable(result.data); 
+        
+        renderTable(result.data);
+        renderPagination(result); // Add this
     } catch (error) {
-        console.error("Fetch Error:", error);
         Toast.fire({ icon: 'error', title: 'Failed to load rooms' });
     } finally {
         if (loader) loader.classList.add('hidden');
     }
 }
+
+function renderPagination(paginationData) {
+    const container = document.getElementById('pagination-container');
+    if (!container) return;
+
+    // Build the page numbers list (e.g., [1, 2, 3])
+    let pageNumbers = '';
+    for (let i = 1; i <= paginationData.last_page; i++) {
+        const isActive = i === paginationData.current_page;
+        pageNumbers += `
+            <button onclick="changePage(${i})" 
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold transition-all ${isActive 
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' 
+                    : 'text-neutral-600 hover:bg-indigo-50 hover:text-indigo-600'}">
+                ${i}
+            </button>`;
+    }
+
+    container.innerHTML = `
+        <div class="flex items-center justify-between px-6 py-4 border-t border-neutral-200 dark:border-neutral-700">
+            <span class="text-xs text-neutral-500">
+                Showing <span class="font-bold text-neutral-900 dark:text-white">${paginationData.from || 0}</span> to 
+                <span class="font-bold text-neutral-900 dark:text-white">${paginationData.to || 0}</span> of 
+                <span class="font-bold text-neutral-900 dark:text-white">${paginationData.total}</span> entries
+            </span>
+            
+            <div class="flex items-center gap-1">
+                <button onclick="changePage(${paginationData.current_page - 1})" 
+                        ${!paginationData.prev_page_url ? 'disabled' : ''}
+                        class="px-3 py-1 text-sm font-bold text-neutral-600 rounded-lg hover:bg-neutral-100 disabled:opacity-30">
+                    Prev
+                </button>
+                
+                <div class="flex gap-1">${pageNumbers}</div>
+                
+                <button onclick="changePage(${paginationData.current_page + 1})" 
+                        ${!paginationData.next_page_url ? 'disabled' : ''}
+                        class="px-3 py-1 text-sm font-bold text-neutral-600 rounded-lg hover:bg-neutral-100 disabled:opacity-30">
+                    Next
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+window.changePage = function(page) {
+    const search = document.getElementById('roomSearchInput').value;
+    fetchRooms(search, page);
+};
 
 // 4. UI RENDERING LOGIC
 function renderTable(rooms) {
